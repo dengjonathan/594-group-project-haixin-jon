@@ -18,7 +18,7 @@ import edu.upenn.cit594.datamanagement.Reader;
 
 // This class implements Reader interface. 
 // It handles the reading of the tweets JSON file and exposes a method to be used by the Processor to get the data.
-public class JSONFileReader implements Reader<String, String> {
+public class JSONFileReader implements Reader<String, Double> {
     protected String fileName;
 
 	public JSONFileReader(String name) {
@@ -26,25 +26,11 @@ public class JSONFileReader implements Reader<String, String> {
 	}
 
 	@Override
-	public Map<String, String> buildAMap() throws Exception 
+	public Map<String, Double> buildAMap() throws Exception 
 	{
 		JSONParser parser = new JSONParser();
 
-		Map<String, String> locationTweetsMap = new HashMap<String, String>();
-
-		JSONArray tweets = (JSONArray)parser.parse(new FileReader(fileName));
-
-		Iterator iter = tweets.iterator();
-
-		while (iter.hasNext()) {
-			JSONObject entry = (JSONObject) iter.next();
-			JSONArray location = (JSONArray) entry.get("location");
-			double latitude = (double)location.get(0);
-			double longitude = (double)location.get(1);
-			String locations = latitude + "," + longitude;
-			String tweet = (String) entry.get("text");
-			locationTweetsMap.put(tweet, locations);
-		}
-		return locationTweetsMap;
+		// TO DO
+		return null;
 	}
 }

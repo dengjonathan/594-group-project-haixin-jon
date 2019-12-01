@@ -1,5 +1,7 @@
 package edu.upenn.cit594.ui;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 import java.util.Collections;
 
@@ -17,7 +19,7 @@ public class CommandLineUserInterface {
 		in = new Scanner(System.in);
 	}
 	
-	public void start() {
+	public void start() throws Exception {
 		System.out.print("Enter 0 to exit the program, 1 to the total population for all ZIP Codes, "
 				+ "2 to show the total parking fines per capita for each ZIP Code, "
 				+ "3 to show the average market value for residences in a specified ZIP Code, "
@@ -26,10 +28,6 @@ public class CommandLineUserInterface {
 				+ "6 to show the results of your custom feature");
 	    int choice = in.nextInt();
 	    
-	  //  if (!validInput(choice)) {
-	  //  	System.out.println("Invalid input");
-	  //  }
-	  
 	    if (choice == 0) {
 			return; 
 		}
@@ -61,9 +59,8 @@ public class CommandLineUserInterface {
 	    // TO DO
 	}
 	
-	public int totalPopulationAllZips() {
-		// TO Do
-		return 1;
+	public int totalPopulationAllZips() throws Exception {
+		return (processor.totalPopulationAllZips());
 	} 
 	
 	public int totalParkingFinesPerCapita() {
@@ -71,24 +68,25 @@ public class CommandLineUserInterface {
 		return 1;
 	}
 	
-	public double averageMarketValueForResidences() {
-		System.out.print("Please enter the zip: "); 
-		String course = in.next();
-		// TO DO
-		return 1;
+	public double averageMarketValueForResidences() throws FileNotFoundException, IOException {
+		System.out.println("Please enter the zip: "); 
+		String zip = in.next();
+		System.out.println("Calculating..."); 
+		return (processor.averageMarketValueInOneZip(zip));
+		
 	}
 
-	public double averageLivableAreaForResidences() {
-		System.out.print("Please enter the zip: "); 
-		String course = in.next();
-		// TO DO
-		return 1;
+	public double averageLivableAreaForResidences() throws FileNotFoundException, IOException {
+		System.out.println("Please enter the zip: "); 
+		String zip = in.next();
+	    System.out.println("Calculating..."); 
+		return (processor.averageLivableAreaInOneZip(zip));
 	}
 	
-	public double totalMarketValuePerCapita() {
-		System.out.print("Please enter the zip: "); 
-		String course = in.next();
-	    // TO DO
-		return 1;
+	public double totalMarketValuePerCapita() throws Exception {
+		System.out.println("Please enter the zip: "); 
+		String zip = in.next();
+		System.out.println("Calculating..."); 
+		return (processor.marketValuePerCapitaInOneZip(zip));
 	}
 }

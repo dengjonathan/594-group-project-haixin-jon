@@ -4,7 +4,7 @@ import java.util.*;
 import org.json.simple.parser.ParseException;
 import java.io.*;
 
-public class CSVFileReader extends Conversion implements Reader<String, String>
+public class CSVFileReader implements Reader<String, Double>
 {
     protected String fileName;
     
@@ -24,14 +24,15 @@ public class CSVFileReader extends Conversion implements Reader<String, String>
     		while (in.hasNextLine()) {
     			line = in.nextLine();
     			String[] info = line.split(",");
+    			String aFine = info[1];
     			String zip = info[6];
-    			double aFine = convertStringToDouble(info[1]);
+    			double aFineNum = Double.parseDouble(aFine);
 	
     			if (totalFineEachZip.get(zip) == null) {
-    				totalFineEachZip.put(zip, aFine);
+    				totalFineEachZip.put(zip, aFineNum);
     			}
     			else {
-    				totalFineEachZip.put(zip, totalFineEachZip.get(zip) + aFine);
+    				totalFineEachZip.put(zip, totalFineEachZip.get(zip) + aFineNum);
     			}
     		}
     	}
