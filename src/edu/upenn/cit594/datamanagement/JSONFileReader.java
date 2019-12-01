@@ -19,15 +19,14 @@ import edu.upenn.cit594.datamanagement.Reader;
 // This class implements Reader interface. 
 // It handles the reading of the tweets JSON file and exposes a method to be used by the Processor to get the data.
 public class JSONFileReader implements Reader<String, Double> {
-    protected String fileName;
+	protected String fileName;
 
 	public JSONFileReader(String name) {
 		fileName = name;
 	}
 
 	@Override
-	public Map<String, Double> buildAMap() throws Exception 
-	{
+	public Map<String, Double> buildAMap() throws Exception {
 		JSONParser parser = new JSONParser();
 
 		// TO DO
