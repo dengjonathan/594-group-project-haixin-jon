@@ -24,16 +24,11 @@ public class PropertyValueCSVFileReader {
 			while (in.hasNextLine()) {
 				line = in.nextLine();
 				String[] info = line.split(",");
-				// System.out.println("hello");
-
 				String marketValue = info[34];
-				// System.out.println(marketValue);
-
 				String zip;
 				double marketValueNum;
 				try {
 					zip = info[72].substring(0, 5);
-					// System.out.println(zip);
 					marketValueNum = Double.parseDouble(marketValue);
 
 				} catch (Exception e) {
@@ -44,8 +39,6 @@ public class PropertyValueCSVFileReader {
 				if (totalMarketValueEachZip.get(zip) == null) {
 					totalMarketValueEachZip.put(zip, marketValueNum);
 				} else {
-					// System.out.println(zip);
-
 					totalMarketValueEachZip.put(zip, totalMarketValueEachZip.get(zip) + marketValueNum);
 				}
 			}
@@ -77,7 +70,6 @@ public class PropertyValueCSVFileReader {
 				String zip;
 				try {
 					zip = info[72].substring(0, 5);
-					// System.out.println(zip);
 				} catch (Exception e) {
 					// skip the invalid data line
 					continue;

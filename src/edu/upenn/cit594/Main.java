@@ -39,7 +39,11 @@ public class Main {
 		}
 
 		Logger.setFileName(logFile);
+		System.out.println("Initiating the program, please wait...");
 		Processor processor = new Processor(reader, propertyValueFileName, populationFileName);
+	//	System.out.println(populationFileName);
+
+		System.out.println("Initiating finished.");
 		CommandLineUserInterface ui = new CommandLineUserInterface(processor);
 		ui.start();
 		ui.display();
