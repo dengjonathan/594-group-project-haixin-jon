@@ -4,10 +4,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 
-import edu.upenn.cit594.datamanagement.Reader;
-import edu.upenn.cit594.datamanagement.TextFileReader;
-import edu.upenn.cit594.datamanagement.CSVFileReader;
-import edu.upenn.cit594.datamanagement.PropertyValueCSVFileReader;
+import edu.upenn.cit594.data.Violation;
+import edu.upenn.cit594.datamanagement.*;
 import edu.upenn.cit594.logging.Logger;
 
 //This class is responsible ONLY for processing data
@@ -19,8 +17,9 @@ public class Processor {
 	protected Map<String, Integer> numOfResidenceEachZip;
 	protected Map<String, Double> totalLivableAreaEachZip;
 	protected Map<String, Double> populationEachZip;
+	protected List<Violation> violations;
 
-	public Processor(Reader<String, Double> reader, String propertyValueFileName, String populationFileName) throws Exception {
+	public Processor(String violationFilename, String propertyValueFileName, String populationFileName) throws Exception {
     	this.reader = reader;
     	this.populationData = new TextFileReader(populationFileName);
     	this.propertyData = new PropertyValueCSVFileReader(propertyValueFileName);
@@ -28,6 +27,10 @@ public class Processor {
     	this.numOfResidenceEachZip = propertyData.buildNumOfResidenceEachZipMap();
     	this.totalLivableAreaEachZip = propertyData.buildLivableAreaEachZipMap();
     	this.populationEachZip = populationData.buildPopulationZipMap();
+    	ViolationFileReader violationReader = violationFilename.indexOf(".json") > -1 ?
+				new ViolationJSONFileReader() :
+				new ViolationCsvFileReader();
+    	this.violations = violationReader.parse(violationFilename);
 	}
 	
 	public int totalPopulationAllZips() throws Exception {
@@ -67,7 +70,36 @@ public class Processor {
         double marketValuePerCapita = totalMarketValueEachZip.get(zip)/populationEachZip.get(zip);
  	    return marketValuePerCapita; 
     }
-    
+
+    public List<String> totalFinesPerCapita() {
+		Iterator<String> it = populationEachZip.keySet().iterator();
+		List<String> lines = new ArrayList<>();
+		while (it.hasNext()) {
+			String zip = it.next();
+			List<Violation> violations = findViolationsPerZip(zip);
+			int sum = 0;
+			for (Violation violation: violations) {
+				sum += violation.getFine();
+			}
+			Double perCapita = sum / populationEachZip.get(zip);
+			String line = zip + " " + String.format("%.4f", perCapita);
+			lines.add(line);
+			System.out.println(line);
+		}
+		return lines;
+	}
+
+	private List<Violation> findViolationsPerZip(String zip) {
+		List<Violation> result = new ArrayList<>();
+		for (Violation violation: violations) {
+			if (violation.getZip() == zip) {
+				result.add(violation);
+			}
+		}
+		return result;
+	}
+
+
     public void writeLog(String msg) {
          Logger.getInstance().log(msg);
     }
