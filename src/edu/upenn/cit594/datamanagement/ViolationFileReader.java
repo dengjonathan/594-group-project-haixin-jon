@@ -21,6 +21,6 @@ public abstract class ViolationFileReader {
         return null;
     }
 
-    public abstract List<Violation> parse(String filename);
+    public abstract List<Violation> parse(String filename) throws Exception;
 }
 
