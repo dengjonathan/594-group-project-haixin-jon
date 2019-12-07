@@ -25,7 +25,12 @@ public class Logger {
 	}
 
 	public void log(String msg) {
-		out.println(msg);
+		long ms = System.currentTimeMillis();
+		out.println(ms + " " + msg);
 		out.flush();
+	}
+
+	public void close() {
+		out.close();
 	}
 }

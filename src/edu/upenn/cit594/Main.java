@@ -1,9 +1,5 @@
 package edu.upenn.cit594;
 
-import edu.upenn.cit594.datamanagement.Reader;
-import edu.upenn.cit594.datamanagement.CSVFileReader;
-import edu.upenn.cit594.datamanagement.JSONFileReader;
-import edu.upenn.cit594.datamanagement.TextFileReader;
 import edu.upenn.cit594.logging.Logger;
 import edu.upenn.cit594.processor.Processor;
 import edu.upenn.cit594.ui.CommandLineUserInterface;
@@ -12,8 +8,6 @@ import edu.upenn.cit594.ui.CommandLineUserInterface;
 public class Main {
 
 	public static void main(String[] args) throws Exception {
-		Reader<String, Double> reader = null;
-
 		if (args.length != 5) {
 			System.out.println("Wrong input");
 			System.exit(0);
@@ -24,24 +18,18 @@ public class Main {
 		String propertyValueFileName = args[2];
 		String populationFileName = args[3];
 		String logFile = args[4];
+		// log program instantiation with runtime args
+		Logger.setFileName(logFile);
+		Logger.getInstance().log(parkingViolationFileFormat + " " + parkingViolationFileName + " " + propertyValueFileName + " " + logFile);
 
-		if (!parkingViolationFileFormat.equals("csv") && !parkingViolationFileFormat.equals("json")) {
+		if (!parkingViolationFileFormat.equals("csv") && parkingViolationFileName.indexOf(".csv") < 0) {
 			System.out.println("Wrong input");
 			System.exit(0);
 		}
 
-		if (parkingViolationFileFormat.equals("csv")) {
-			reader = new CSVFileReader(parkingViolationFileName);
-		} else if (parkingViolationFileFormat.equals("json")) {
-			reader = new JSONFileReader(parkingViolationFileName);
-		} else {
-			throw new RuntimeException("unrecognized format suffix");
-		}
-
-		Logger.setFileName(logFile);
 		System.out.println("Initiating the program, please wait...");
-		Processor processor = new Processor(reader, propertyValueFileName, populationFileName);
-	//	System.out.println(populationFileName);
+
+		Processor processor = new Processor(parkingViolationFileName, propertyValueFileName, populationFileName);
 
 		System.out.println("Initiating finished.");
 		CommandLineUserInterface ui = new CommandLineUserInterface(processor);
