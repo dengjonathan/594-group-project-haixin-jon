@@ -52,6 +52,8 @@ public class TextFileReader {
 			File file = new File(fileName);
 			assert (file.exists());
 			in = new Scanner(file);
+			Logger.getInstance().log(fileName);
+
 			while (in.hasNextLine()) {
 				line = in.nextLine();
 				String[] info = line.split(" ");
