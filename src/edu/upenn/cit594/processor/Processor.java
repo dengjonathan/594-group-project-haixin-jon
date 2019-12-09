@@ -77,7 +77,9 @@ public class Processor {
 		while(it.hasNext()) {
 			String zip = it.next();
 			double perCapita = totalFinesPerCapitaByZip.get(zip);
-			lines.add(formatTotalFinesOutput(zip, perCapita));
+			if (perCapita != 0) {
+				lines.add(formatTotalFinesOutput(zip, perCapita));
+			}
 		}
 		// print in ascending order by zip
 		Collections.sort(lines);
