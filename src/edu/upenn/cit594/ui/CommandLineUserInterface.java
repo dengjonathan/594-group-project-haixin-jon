@@ -105,6 +105,7 @@ public class CommandLineUserInterface {
 	}
 
 	public void averageMarketValueForResidences() throws FileNotFoundException, IOException {
+		// passing market value
 		System.out.println("Please enter the zip: ");
 		String zip = in.next();
 		Logger.getInstance().log(zip);
@@ -116,8 +117,9 @@ public class CommandLineUserInterface {
 			System.out.println(0);
 		}
 	}
-
+	
 	public void averageLivableAreaForResidences() throws FileNotFoundException, IOException {
+		// passing livable area
 		System.out.println("Please enter the zip: ");
 		String zip = in.next();
 		Logger.getInstance().log(zip);
@@ -129,8 +131,9 @@ public class CommandLineUserInterface {
 			System.out.println(0);
 		}
 	}
-
+	
 	public void totalMarketValuePerCapita() throws Exception {
+		// passing market value
 		System.out.println("Please enter the zip: ");
 		String zip = in.next();
 		Logger.getInstance().log(zip);

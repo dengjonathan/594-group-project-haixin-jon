@@ -1,43 +1,25 @@
 package edu.upenn.cit594.data;
 
 public class ZipPropertyData {
-	private int validResidenceNumForMarketValueForOneZip = 0;
-	private int validResidenceNumForLivableAreaForOneZip = 0;
-	private double totalMarketValueForOneZip = 0;
-	private double totalLivableAreaForOneZip = 0;
+	private int count = 0;
+	private double total = 0;
 
 	public ZipPropertyData() {
 
 	}
 
-	public int getValidResidenceNumForMarketValueForOneZip() {
-		return validResidenceNumForMarketValueForOneZip;
+	public int getCount() {
+		return count;
 	}
 
-	public int getValidResidenceNumForLivableAreaForOneZip() {
-		return validResidenceNumForLivableAreaForOneZip;
+	public double getTotal() {
+		return total;
 	}
 
-	public double getTotalMarketValueForOneZip() {
-		return totalMarketValueForOneZip;
+	public void addTotal(double value) {
+		total += value;
+		count++;
 	}
-
-	public double getTotalLivableAreaForOneZip() {
-		return totalLivableAreaForOneZip;
-	}
-
-	public void addMarketValue(double marketValueNum) {
-		totalMarketValueForOneZip += marketValueNum;
-		validResidenceNumForMarketValueForOneZip++;
-	}
-
-	public void addLivableArea(double livableAreaNum) {
-		totalLivableAreaForOneZip += livableAreaNum;
-		validResidenceNumForLivableAreaForOneZip++;
-	}
-
-	public String toString() {
-		return String.format("%d %d %g %g", validResidenceNumForMarketValueForOneZip,
-				validResidenceNumForLivableAreaForOneZip, totalMarketValueForOneZip, totalLivableAreaForOneZip);
-	}
+	
+	
 }
