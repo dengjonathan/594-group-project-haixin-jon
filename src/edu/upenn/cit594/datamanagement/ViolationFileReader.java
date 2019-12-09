@@ -3,6 +3,7 @@ package edu.upenn.cit594.datamanagement;
 import java.util.Date;
 import java.util.List;
 import edu.upenn.cit594.data.Violation;
+import edu.upenn.cit594.logging.Logger;
 
 public abstract class ViolationFileReader {
     public ViolationFileReader() {
@@ -19,6 +20,10 @@ public abstract class ViolationFileReader {
             return new Violation(ticketNumber, date, fine, description, plateId, state, zip);
         }
         return null;
+    }
+
+    protected void log(String msg) {
+        Logger.getInstance().log(msg);
     }
 
     public abstract List<Violation> parse(String filename) throws Exception;
