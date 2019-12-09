@@ -17,6 +17,8 @@ public class Processor {
 	protected Map<String, Double> totalLivableAreaEachZip;
 	protected Map<String, Double> populationEachZip;
 	protected List<Violation> violations;
+	protected Map<String, List<Violation>> violationsByZip;
+	protected List<String> violationsPerCapitaOutput;
 
 	public Processor(String violationFilename, String propertyValueFileName, String populationFileName) throws Exception {
     	this.populationData = new TextFileReader(populationFileName);
@@ -29,6 +31,8 @@ public class Processor {
 				new ViolationJSONFileReader() :
 				new ViolationCsvFileReader();
     	this.violations = violationReader.parse(violationFilename);
+    	this.violationsByZip = partitionViolationsByZip(filterViolationsForPAPlate());
+
 	}
 	
 	public int totalPopulationAllZips() throws Exception {
@@ -90,7 +94,10 @@ public class Processor {
 		List<String> lines = new ArrayList<>();
 		while (it.hasNext()) {
 			String zip = it.next();
-			List<Violation> violations = findViolationsPerZipWithPA(zip);
+			List<Violation> violations = violationsByZip.get(zip);
+			if (violations == null) {
+				continue;
+			}
 			int sum = 0;
 			for (Violation violation: violations) {
 				sum += violation.getFine();
@@ -101,15 +108,37 @@ public class Processor {
 		return result;
 	}
 
-	private List<Violation> findViolationsPerZipWithPA(String zip) {
+	/**
+	 * Uses List Data Structure to filter out non-PA plates
+	 * @return
+	 */
+	private List<Violation> filterViolationsForPAPlate() {
 		List<Violation> result = new ArrayList<>();
 		for (Violation violation: violations) {
-			// check is that violation is within the zip and has a PA plate
-			if (violation.getZip().equals(zip) && violation.getStateOfPlate().toLowerCase().equals("pa")) {
+			// check is that violation has a PA plate
+			if (violation.getStateOfPlate().toLowerCase().equals("pa")) {
 				result.add(violation);
 			}
 		}
 		return result;
+	}
+
+	/**
+	 * Creates key-value map by ZipCode -> List<Violation> to support operations by ZipCode
+	 * @param violations
+	 * @return Map of ZipCode to List<Violation> for violations that occurred in that zip code
+	 */
+	private Map<String, List<Violation>> partitionViolationsByZip(List<Violation> violations) {
+		Map<String, List<Violation>> violationsByZip = new HashMap<>();
+		for (Violation violation: violations) {
+			List<Violation> violationsForZip = violationsByZip.get(violation.getZip());
+			if (violationsForZip == null) {
+				violationsByZip.put(violation.getZip(), new ArrayList<>());
+				violationsForZip = violationsByZip.get(violation.getZip());
+			}
+			violationsForZip.add(violation);
+		}
+		return violationsByZip;
 	}
 
 	/**
@@ -118,6 +147,9 @@ public class Processor {
 	 * house greater than the threshold value
 	 */
 	public List<String> totalFinesPerCapitaThreshold(double threshold) {
+		if (violationsPerCapitaOutput != null) {
+			return violationsPerCapitaOutput;
+		}
 		List<String> lines = new ArrayList<>();
 		Map<String, Double> totalFinesPerCapitaByZip = totalFinesPerCapitaByZip();
 		Iterator<String> it = totalFinesPerCapitaByZip.keySet().iterator();
@@ -138,13 +170,10 @@ public class Processor {
 		}
 		// print in ascending order by zip
 		Collections.sort(lines);
+		// memoize the output
+		violationsPerCapitaOutput = lines;
 		return lines;
 	}
-
-
-    public void writeLog(String msg) {
-         Logger.getInstance().log(msg);
-    }
 }
 
    
