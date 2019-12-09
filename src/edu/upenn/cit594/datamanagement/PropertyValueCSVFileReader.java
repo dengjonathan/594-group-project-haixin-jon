@@ -1,6 +1,11 @@
 package edu.upenn.cit594.datamanagement;
 
 import java.util.*;
+import java.util.concurrent.Callable;
+
+import edu.upenn.cit594.data.ZipPropertyData;
+import edu.upenn.cit594.logging.Logger;
+
 import java.io.*;
 
 public class PropertyValueCSVFileReader {
@@ -9,37 +14,76 @@ public class PropertyValueCSVFileReader {
 	public PropertyValueCSVFileReader(String name) {
 		fileName = name;
 	}
-
-	public Map<String, Double> buildMarketValueEachZipMap() throws FileNotFoundException, IOException {
-		Map<String, Double> totalMarketValueEachZip = new HashMap<String, Double>();
-
+	
+	public Map<String, ZipPropertyData> buildPropertyDataForEachZipMap() throws FileNotFoundException, IOException {
+		Map<String, ZipPropertyData> propertyDataMap = new HashMap<>();
 		Scanner in = null;
 		String line = "";
+		String zip = "";
+		ZipPropertyData zipData;
+		int zipIndex = 0;
+		int marketValueIndex = 0;
+		int livableAreaIndex = 0;
 
 		try {
 			File file = new File(fileName);
 			assert (file.exists());
 			in = new Scanner(file);
-			in.nextLine(); // consume the top row
+			// call log
+			Logger.getInstance().log(fileName);
+			
+			String[] header = in.nextLine().split(",");
+			String livableArea;
+			double livableAreaNum;
+			String marketValue;
+			double marketValueNum;
+
+			for (int i = 0; i < header.length; i++) {
+				if (header[i].equalsIgnoreCase("zip_code")) {
+					zipIndex = i;
+				}
+				if (header[i].equalsIgnoreCase("total_livable_area")) {
+					livableAreaIndex = i;
+				}
+				if (header[i].equalsIgnoreCase("market_value")) {
+					marketValueIndex = i;
+				}
+			}
+			
 			while (in.hasNextLine()) {
 				line = in.nextLine();
-				String[] info = line.split(",");
-				String marketValue = info[34];
-				String zip;
-				double marketValueNum;
+			
 				try {
-					zip = info[72].substring(0, 5);
-					marketValueNum = Double.parseDouble(marketValue);
+					String[] info = line.split(",");
+					zip = info[zipIndex].substring(0, 5);
+
+					if (!propertyDataMap.containsKey(zip)) {
+						zipData = new ZipPropertyData();
+						propertyDataMap.put(zip,  zipData);
+					} else {
+						zipData = propertyDataMap.get(zip);
+					}
+
+					try {
+						marketValue = info[marketValueIndex];
+						marketValueNum = Double.parseDouble(marketValue);
+						zipData.addMarketValue(marketValueNum);
+					} catch (Exception e) {
+						// skip the invalid market value, but process the rest of the row
+					}
+
+					try {
+						livableArea = info[livableAreaIndex];
+						livableAreaNum = Double.parseDouble(livableArea);
+						zipData.addLivableArea(livableAreaNum);
+
+					} catch (Exception e) {
+						// skip the invalid livable area data, but process the rest of the row
+					}
 
 				} catch (Exception e) {
-					// skip the invalid data line
+					// skip the whole row if zip input is invalid
 					continue;
-				}
-
-				if (totalMarketValueEachZip.get(zip) == null) {
-					totalMarketValueEachZip.put(zip, marketValueNum);
-				} else {
-					totalMarketValueEachZip.put(zip, totalMarketValueEachZip.get(zip) + marketValueNum);
 				}
 			}
 		} catch (Exception e) {
@@ -49,86 +93,6 @@ public class PropertyValueCSVFileReader {
 				in.close();
 			}
 		}
-
-		return totalMarketValueEachZip;
-	}
-
-	public Map<String, Integer> buildNumOfResidenceEachZipMap() throws FileNotFoundException, IOException {
-		Map<String, Integer> numOfResidenceEachZip = new HashMap<String, Integer>();
-
-		Scanner in = null;
-		String line = "";
-
-		try {
-			File file = new File(fileName);
-			assert (file.exists());
-			in = new Scanner(file);
-			in.nextLine(); // consume the top row
-			while (in.hasNextLine()) {
-				line = in.nextLine();
-				String[] info = line.split(",");
-				String zip;
-				try {
-					zip = info[72].substring(0, 5);
-				} catch (Exception e) {
-					// skip the invalid data line
-					continue;
-				}
-
-				if (numOfResidenceEachZip.get(zip) == null) {
-					numOfResidenceEachZip.put(zip, 1);
-				} else {
-					numOfResidenceEachZip.put(zip, numOfResidenceEachZip.get(zip) + 1);
-				}
-			}
-		} catch (Exception e) {
-			throw new IllegalStateException(e);
-		} finally {
-			if (in != null) {
-				in.close();
-			}
-		}
-		return numOfResidenceEachZip;
-	}
-
-	public Map<String, Double> buildLivableAreaEachZipMap() throws FileNotFoundException, IOException {
-		Map<String, Double> totalLivableAreaEachZip = new HashMap<String, Double>();// double check if int
-
-		Scanner in = null;
-		String line = "";
-
-		try {
-			File file = new File(fileName);
-			assert (file.exists());
-			in = new Scanner(file);
-			in.nextLine(); // consume the top row
-			while (in.hasNextLine()) {
-				line = in.nextLine();
-				String[] info = line.split(",");
-				String livableArea = info[64];
-				String zip;
-				double livableAreaNum;
-				try {
-					zip = info[72].substring(0, 5);
-					livableAreaNum = Double.parseDouble(livableArea);
-				} catch (Exception e) {
-					// skip the invalid data line
-					continue;
-				}
-
-				if (totalLivableAreaEachZip.get(zip) == null) {
-					totalLivableAreaEachZip.put(zip, livableAreaNum);
-				} else {
-					totalLivableAreaEachZip.put(zip, totalLivableAreaEachZip.get(zip) + livableAreaNum);
-				}
-			}
-		} catch (Exception e) {
-			throw new IllegalStateException(e);
-		} finally {
-			if (in != null) {
-				in.close();
-			}
-		}
-		return totalLivableAreaEachZip;
+		return propertyDataMap;
 	}
 }

@@ -20,7 +20,8 @@ public class Main {
 		String logFile = args[4];
 		// log program instantiation with runtime args
 		Logger.setFileName(logFile);
-		Logger.getInstance().log(parkingViolationFileFormat + " " + parkingViolationFileName + " " + propertyValueFileName + " " + logFile);
+		Logger.getInstance().log(parkingViolationFileFormat + " " + parkingViolationFileName + " "
+				+ propertyValueFileName + " " + logFile);
 
 		if (!parkingViolationFileFormat.equals("csv") && parkingViolationFileName.indexOf(".csv") < 0) {
 			System.out.println("Wrong input");
@@ -34,6 +35,5 @@ public class Main {
 		System.out.println("Initiating finished.");
 		CommandLineUserInterface ui = new CommandLineUserInterface(processor);
 		ui.start();
-		ui.display();
 	}
 }

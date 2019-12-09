@@ -7,7 +7,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import edu.upenn.cit594.datamanagement.Reader;
+import edu.upenn.cit594.logging.Logger;
 
 //This class implements Reader interface. 
 //It handles the reading of the population text file and exposes a method to be used by the Processor to get the data.
@@ -27,6 +27,8 @@ public class TextFileReader {
 			File file = new File(fileName);
 			assert (file.exists());
 			in = new Scanner(file);
+			Logger.getInstance().log(fileName);
+
 			while (in.hasNextLine()) {
 				line = in.nextLine();
 				String[] info = line.split(" ");
