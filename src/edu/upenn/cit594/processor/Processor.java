@@ -20,6 +20,7 @@ public class Processor {
 	protected Map<String, Double> populationEachZip;
 	protected List<Violation> violations;
 	protected Map<String, List<Violation>> violationsByZip;
+	// for memoization
 	protected List<String> violationsPerCapitaOutput;
 
 
@@ -33,6 +34,7 @@ public class Processor {
 		ViolationFileReader violationReader = violationFilename.indexOf(".json") > -1 ? new ViolationJSONFileReader()
 				: new ViolationCsvFileReader();
 		this.violations = violationReader.parse(violationFilename);
+		this.violationsByZip = partitionViolationsByZip(filterViolationsForPAPlate());
 	}
 
 	public int totalPopulationAllZips() throws Exception {
@@ -107,6 +109,9 @@ public class Processor {
 	}
 
 	public List<String> totalFinesPerCapita() throws Exception {
+		if (violationsPerCapitaOutput != null) {
+			return violationsPerCapitaOutput;
+		}
 		List<String> lines = new ArrayList<>();
 		Map<String, Double> totalFinesPerCapitaByZip = totalFinesPerCapitaByZip();
 		Iterator<String> it = totalFinesPerCapitaByZip.keySet().iterator();
@@ -195,9 +200,6 @@ public class Processor {
 	 * house greater than the threshold value
 	 */
 	public List<String> totalFinesPerCapitaThreshold(double threshold) throws Exception {
-		if (violationsPerCapitaOutput != null) {
-			return violationsPerCapitaOutput;
-		}
 		List<String> lines = new ArrayList<>();
 		Map<String, Double> totalFinesPerCapitaByZip = totalFinesPerCapitaByZip();
 		Iterator<String> it = totalFinesPerCapitaByZip.keySet().iterator();

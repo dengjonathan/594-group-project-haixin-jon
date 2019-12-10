@@ -73,7 +73,7 @@ public class CommandLineUserInterface {
 				+ "6 to show the total parking fines per capita for each ZIP Code filtered by threshold market value.");
 	}
 
-	public void totalParkingFinesPerCapita() {
+	public void totalParkingFinesPerCapita() throws Exception {
 		List<String> lines = processor.totalFinesPerCapita();
 		for (String line : lines) {
 			System.out.println(line);
