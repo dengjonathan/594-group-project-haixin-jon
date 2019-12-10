@@ -118,6 +118,8 @@ public class Processor {
 		}
 		// print in ascending order by zip
 		Collections.sort(lines);
+		// memoize the output
+		violationsPerCapitaOutput = lines;
 		return lines;
 	}
 
@@ -219,8 +221,6 @@ public class Processor {
 		}
 		// print in ascending order by zip
 		Collections.sort(lines);
-		// memoize the output
-		violationsPerCapitaOutput = lines;
 		return lines;
 	}
 }
