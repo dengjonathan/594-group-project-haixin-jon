@@ -26,7 +26,7 @@ public class Main {
 		Logger.getInstance().log(parkingViolationFileFormat + " " + parkingViolationFileName + " "
 				+ propertyValueFileName + " " + logFile);
 
-		String[] filenames = { parkingViolationFileName, populationFileName, propertyValueFileName};
+		String[] filenames = { parkingViolationFileName, populationFileName, propertyValueFileName };
 
 		// check argument validity
 		if (!checkFileFormat(parkingViolationFileFormat, parkingViolationFileName) || !checkFilesExist(filenames)) {
@@ -44,12 +44,12 @@ public class Main {
 	}
 
 	private static boolean checkFileFormat(String format, String filename) {
-		return format.equals("csv") && filename.indexOf(".csv") > 0 ||
-				format.equals("json") && filename.indexOf(".json") > 0;
+		return format.equals("csv") && filename.indexOf(".csv") > 0
+				|| format.equals("json") && filename.indexOf(".json") > 0;
 	}
 
 	private static boolean checkFilesExist(String[] filenames) {
-		for (String file: filenames) {
+		for (String file : filenames) {
 			try {
 				String[] splitByDot = file.split("\\.");
 				File temp = File.createTempFile(splitByDot[0], splitByDot[1]);

@@ -43,7 +43,7 @@ public class CommandLineUserInterface {
 			} else if (choice == 1) {
 				totalPopulation();
 			} else if (choice == 2) {
-			    totalParkingFinesPerCapita();
+				totalParkingFinesPerCapita();
 			} else if (choice == 3) {
 				averageMarketValueForResidences();
 			} else if (choice == 4) {
@@ -58,12 +58,13 @@ public class CommandLineUserInterface {
 			System.out.println();
 		} catch (NoDataForZipException e) {
 			System.out.println(e.getMessage());
+			System.out.println();
 		} catch (InputMismatchException e) {
 			// if user types in a non-integer value
 			System.out.println("Invalid input");
 			// clears buffer
 			in.nextLine();
-
+			System.out.println();
 		}
 
 		recordUserChoice();
@@ -122,7 +123,7 @@ public class CommandLineUserInterface {
 			System.out.println(0);
 		}
 	}
-	
+
 	public void averageLivableAreaForResidences() throws FileNotFoundException, IOException {
 		// passing livable area
 		System.out.println("Please enter the zip: ");
@@ -136,7 +137,7 @@ public class CommandLineUserInterface {
 			System.out.println(0);
 		}
 	}
-	
+
 	public void totalMarketValuePerCapita() throws Exception {
 		// passing market value
 		System.out.println("Please enter the zip: ");
