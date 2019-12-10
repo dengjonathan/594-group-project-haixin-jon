@@ -15,6 +15,10 @@ public class PropertyValueCSVFileReader {
 		fileName = name;
 	}
 
+	// Strategy Pattern: this function creates an object based on user's choice and
+	// uses the ZipPropertyData class which is part of a larger algorithm.
+	// This allows for a more general algorithm with details filled in by strategy
+	// objects.
 	public Map<String, ZipPropertyData> buildPropertyDataForEachZipMap(String type)
 			throws FileNotFoundException, IOException {
 		Map<String, ZipPropertyData> propertyDataMap = new HashMap<>();
