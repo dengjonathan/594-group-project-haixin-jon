@@ -34,11 +34,10 @@ public class CommandLineUserInterface {
 
 	private void recordUserChoice() throws Exception {
 		prompt();
-		int choice = in.nextInt();
-
-		Logger.getInstance().log("user choice: " + choice);
 
 		try {
+			int choice = in.nextInt();
+			Logger.getInstance().log("user choice: " + choice);
 			if (choice == 0) {
 				return; // Break out of input loop
 			} else if (choice == 1) {
@@ -59,6 +58,12 @@ public class CommandLineUserInterface {
 			System.out.println();
 		} catch (NoDataForZipException e) {
 			System.out.println(e.getMessage());
+		} catch (InputMismatchException e) {
+			// if user types in a non-integer value
+			System.out.println("Invalid input");
+			// clears buffer
+			in.nextLine();
+
 		}
 
 		recordUserChoice();
