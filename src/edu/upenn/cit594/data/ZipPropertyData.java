@@ -21,8 +21,4 @@ public class ZipPropertyData {
 		total += value;
 		count++;
 	}
-
-	public int calculateAverage(double total, int count) {
-		return ((int) total / count);
-	}
 }

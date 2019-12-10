@@ -76,7 +76,7 @@ public class Processor {
 		        return (calculateMarketValuePerCapitaInOneZip(zip)); 
 		}
 		else if (marketValueZipMap == null && populationEachZip != null) {
-			this.marketValueZipMap = propertyData.buildPropertyDataForEachZipMap("total_livable_area");
+			this.marketValueZipMap = propertyData.buildPropertyDataForEachZipMap("market_value");
 	        return (calculateMarketValuePerCapitaInOneZip(zip)); 
 		}
 		else if (marketValueZipMap != null && populationEachZip == null) {
