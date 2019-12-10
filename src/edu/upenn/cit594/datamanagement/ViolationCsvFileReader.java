@@ -45,6 +45,6 @@ public class ViolationCsvFileReader extends ViolationFileReader {
                 in.close();
             }
         }
-        return result;
+        return dedupeViolations(result);
     }
 }

@@ -1,7 +1,7 @@
 package edu.upenn.cit594.datamanagement;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
 import edu.upenn.cit594.data.Violation;
 import edu.upenn.cit594.logging.Logger;
 
@@ -24,6 +24,14 @@ public abstract class ViolationFileReader {
 
     protected void log(String msg) {
         Logger.getInstance().log(msg);
+    }
+
+    /**
+     * @return copy of param list with duplicate Violations (by id) removed
+     */
+    protected List<Violation> dedupeViolations(List<Violation> violations) {
+        Set<Violation> uniques = new HashSet<>(violations);
+        return new ArrayList<>(uniques);
     }
 
     public abstract List<Violation> parse(String filename) throws Exception;
