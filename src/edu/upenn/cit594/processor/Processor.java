@@ -1,4 +1,3 @@
-
 package edu.upenn.cit594.processor;
 
 import java.io.FileNotFoundException;
@@ -20,6 +19,9 @@ public class Processor {
 	Map<String, ZipPropertyData> LivableAreaZipMap;
 	protected Map<String, Double> populationEachZip;
 	protected List<Violation> violations;
+	protected Map<String, List<Violation>> violationsByZip;
+	// for memoization
+	protected List<String> violationsPerCapitaOutput;
 
 	public Processor(String violationFilename, String propertyValueFileName, String populationFileName)
 			throws Exception {
@@ -31,6 +33,7 @@ public class Processor {
 		ViolationFileReader violationReader = violationFilename.indexOf(".json") > -1 ? new ViolationJSONFileReader()
 				: new ViolationCsvFileReader();
 		this.violations = violationReader.parse(violationFilename);
+		this.violationsByZip = partitionViolationsByZip(filterViolationsForPAPlate());
 	}
 
 	public int totalPopulationAllZips() throws Exception {
@@ -51,7 +54,7 @@ public class Processor {
 	
 	private int containsZipForAValidMap(Map<String, ZipPropertyData> aMap, String zip) {
 		if (!aMap.containsKey(zip)) {
-			return formatOutputToBeInteger(0);
+			return 0;
 		} else {
 			double totalValue = aMap.get(zip).getTotal();
 			int count = aMap.get(zip).getCount();
@@ -92,11 +95,11 @@ public class Processor {
 	
 	private int calculateMarketValuePerCapitaInOneZip(String zip) {
 		if (!this.marketValueZipMap.containsKey(zip) || !this.populationEachZip.containsKey(zip)) {
-		    return formatOutputToBeInteger(0);
+		    return 0;
 		}
 		double population = this.populationEachZip.get(zip);
 		if (population == 0) {
-			return formatOutputToBeInteger(0);
+			return 0;
 		}
 
 		double marketValue = this.marketValueZipMap.get(zip).getTotal();
@@ -105,13 +108,18 @@ public class Processor {
 	}
 
 	public List<String> totalFinesPerCapita() throws Exception {
+		if (violationsPerCapitaOutput != null) {
+			return violationsPerCapitaOutput;
+		}
 		List<String> lines = new ArrayList<>();
 		Map<String, Double> totalFinesPerCapitaByZip = totalFinesPerCapitaByZip();
 		Iterator<String> it = totalFinesPerCapitaByZip.keySet().iterator();
 		while (it.hasNext()) {
 			String zip = it.next();
 			double perCapita = totalFinesPerCapitaByZip.get(zip);
-			lines.add(formatTotalFinesOutput(zip, perCapita));
+			if (perCapita != 0) {
+				lines.add(formatTotalFinesOutput(zip, perCapita));
+			}
 		}
 		// print in ascending order by zip
 		Collections.sort(lines);
@@ -119,9 +127,9 @@ public class Processor {
 		violationsPerCapitaOutput = lines;
 		return lines;
 	}
-	
+
 	private int formatOutputToBeInteger(double result) {
-		return ((int)result);
+		return ((int) result);
 	}
 
 	private String formatTotalFinesOutput(String zip, double finesPerCapita) {
@@ -131,34 +139,63 @@ public class Processor {
 	private Map<String, Double> totalFinesPerCapitaByZip() throws Exception {
 		Map<String, Double> result = new HashMap<>();
 		if (this.populationEachZip != null) {
-		Iterator<String> it = populationEachZip.keySet().iterator();
-		while (it.hasNext()) {
-			String zip = it.next();
-			List<Violation> violations = findViolationsPerZipWithPA(zip);
-			int sum = 0;
-			for (Violation violation : violations) {
-				sum += violation.getFine();
+			Iterator<String> it = populationEachZip.keySet().iterator();
+			while (it.hasNext()) {
+				String zip = it.next();
+				List<Violation> violations = violationsByZip.get(zip);
+				if (violations == null) {
+					continue;
+				}
+				int sum = 0;
+				for (Violation violation : violations) {
+					sum += violation.getFine();
+				}
+				Double perCapita = sum / populationEachZip.get(zip);
+				result.put(zip, perCapita);
 			}
-			Double perCapita = sum / populationEachZip.get(zip);
-			result.put(zip, perCapita);
-		}
-		return result;
-		}
-		else {
+			return result;
+		} else {
+			// if populationEacZip isn't built, build it then recursively run again
 			this.populationEachZip = populationData.buildPopulationZipMap();
+			return totalFinesPerCapitaByZip();
 		}
-		return result;
 	}
 
-	private List<Violation> findViolationsPerZipWithPA(String zip) {
+	/**
+	 * Uses List Data Structure to filter out non-PA plates
+	 * 
+	 * @return
+	 */
+	private List<Violation> filterViolationsForPAPlate() {
 		List<Violation> result = new ArrayList<>();
 		for (Violation violation : violations) {
-			// check is that violation is within the zip and has a PA plate
-			if (violation.getZip().equals(zip) && violation.getStateOfPlate().toLowerCase().equals("pa")) {
+			// check is that violation has a PA plate
+			if (violation.getStateOfPlate().toLowerCase().equals("pa")) {
 				result.add(violation);
 			}
 		}
 		return result;
+	}
+
+	/**
+	 * Creates key-value map by ZipCode -> List<Violation> to support operations by
+	 * ZipCode
+	 * 
+	 * @param violations
+	 * @return Map of ZipCode to List<Violation> for violations that occurred in
+	 *         that zip code
+	 */
+	private Map<String, List<Violation>> partitionViolationsByZip(List<Violation> violations) {
+		Map<String, List<Violation>> violationsByZip = new HashMap<>();
+		for (Violation violation : violations) {
+			List<Violation> violationsForZip = violationsByZip.get(violation.getZip());
+			if (violationsForZip == null) {
+				violationsByZip.put(violation.getZip(), new ArrayList<>());
+				violationsForZip = violationsByZip.get(violation.getZip());
+			}
+			violationsForZip.add(violation);
+		}
+		return violationsByZip;
 	}
 
 	/**
@@ -167,7 +204,6 @@ public class Processor {
 	 * @return List of lines describing totalFinesPerCapital ONLY for zip codes
 	 *         which an average market value of house greater than the threshold
 	 *         value
-	 * @throws Exception 
 	 */
 	public List<String> totalFinesPerCapitaThreshold(double threshold) throws Exception {
 		List<String> lines = new ArrayList<>();
@@ -192,9 +228,4 @@ public class Processor {
 		Collections.sort(lines);
 		return lines;
 	}
-
-	public void writeLog(String msg) {
-		Logger.getInstance().log(msg);
-	}
 }
-
