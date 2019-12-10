@@ -1,6 +1,6 @@
 package edu.upenn.cit594.data;
 
-// This class uses the ZipPropertyData class which is part of a larger algorithm.
+// This class is used as part of a larger algorithm (strategy design pattern)
 public class ZipPropertyData {
 	private int count = 0;
 	private double total = 0;
