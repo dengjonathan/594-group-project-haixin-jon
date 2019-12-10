@@ -41,6 +41,6 @@ public class ViolationJSONFileReader extends ViolationFileReader {
                 }
             }
             fr.close();
-            return result;
+            return dedupeViolations(result);
     }
 }
