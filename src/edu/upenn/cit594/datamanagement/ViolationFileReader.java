@@ -28,4 +28,3 @@ public abstract class ViolationFileReader {
 
     public abstract List<Violation> parse(String filename) throws Exception;
 }
-

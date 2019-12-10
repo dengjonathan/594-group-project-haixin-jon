@@ -23,7 +23,8 @@ public class Main {
 
 		// log program instantiation with runtime args
 		Logger.setFileName(logFile);
-		Logger.getInstance().log(parkingViolationFileFormat + " " + parkingViolationFileName + " " + propertyValueFileName + " " + logFile);
+		Logger.getInstance().log(parkingViolationFileFormat + " " + parkingViolationFileName + " "
+				+ propertyValueFileName + " " + logFile);
 
 		String[] filenames = { parkingViolationFileName, populationFileName, propertyValueFileName};
 
@@ -40,7 +41,6 @@ public class Main {
 		System.out.println("Initiating finished.");
 		CommandLineUserInterface ui = new CommandLineUserInterface(processor);
 		ui.start();
-		ui.display();
 	}
 
 	private static boolean checkFileFormat(String format, String filename) {

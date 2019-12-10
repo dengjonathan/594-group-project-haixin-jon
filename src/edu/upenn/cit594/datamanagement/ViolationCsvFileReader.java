@@ -1,6 +1,7 @@
 package edu.upenn.cit594.datamanagement;
 
 import edu.upenn.cit594.data.Violation;
+import edu.upenn.cit594.logging.Logger;
 
 import java.io.File;
 import java.io.IOException;

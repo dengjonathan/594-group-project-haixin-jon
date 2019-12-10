@@ -10,6 +10,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import edu.upenn.cit594.data.Violation;
+import edu.upenn.cit594.logging.Logger;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
